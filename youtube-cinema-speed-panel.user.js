@@ -18,8 +18,6 @@
 // ==/UserScript==
 
 (function () {
-
-(function () {
     'use strict';
 
     class CinemaModePro {
