@@ -36,16 +36,13 @@
 
         init() {
             this.injectStyles();
-            this.hideSearchBar();
+            this.hideElements();
             this.waitForVideo();
             this.setupObservers();
         }
 
         injectStyles() {
             const styles = [
-                '#secondary { display: none !important }',
-                '#comments { display: none !important }',
-                '#search, #search-input, #voice-search-button, ytd-searchbox, #center, #search-form, #search-container, #masthead-search-terms, input#search, [aria-label="Search"], [aria-label="Search YouTube"], [placeholder="Search"], [placeholder="Search YouTube"] { display: none !important }',
                 'video { outline: none !important; border: none !important }',
                 '.html5-video-container { background: #000 !important; outline: none !important }',
                 '#movie_player { outline: none !important }',
@@ -71,22 +68,24 @@
             GM_addStyle(styles);
         }
 
-        hideSearchBar() {
-            var selectors = [
+        isWatchPage() {
+            return window.location.pathname === '/watch';
+        }
+
+        hideElements() {
+            if (!this.isWatchPage()) return;
+            var allSelectors = [
+                '#secondary', '#comments',
                 '#search', '#search-input', '#voice-search-button', 'ytd-searchbox',
                 '#center', '#search-form', '#search-container', '#masthead-search-terms',
                 'input#search', '[aria-label="Search"]', '[aria-label="Search YouTube"]',
                 '[placeholder="Search"]', '[placeholder="Search YouTube"]'
             ];
-            for (var i = 0; i < selectors.length; i++) {
-                var els = document.querySelectorAll(selectors[i]);
+            for (var i = 0; i < allSelectors.length; i++) {
+                var els = document.querySelectorAll(allSelectors[i]);
                 for (var j = 0; j < els.length; j++) {
                     els[j].style.setProperty('display', 'none', 'important');
                 }
-            }
-            var center = document.querySelector('#center');
-            if (center) {
-                center.style.setProperty('display', 'none', 'important');
             }
         }
 
@@ -108,7 +107,7 @@
         setupObservers() {
             var self = this;
             this.observer = new MutationObserver(function () {
-                self.hideSearchBar();
+                self.hideElements();
                 var video = document.querySelector('video');
                 if (video && video !== self.videoElement) {
                     self.stopEdgeGlow();
