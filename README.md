@@ -7,6 +7,16 @@
 
 ---
 
+## Screenshots / Скриншоты
+
+![Speed panel](screenshots/Захват2.jpg)
+![Edge glow](screenshots/Захват5.jpg)
+![Night mode](screenshots/Захват6.jpg)
+![Cinema layout](screenshots/Захват1.jpg)
+![Speed panel closeup](screenshots/Захват4.jpg)
+
+---
+
 ## Features / Возможности
 
 - **Speed control** — 1x, 1.25x, 1.5x, 1.75x, 2x, 2.2x; appears at bottom center on hover
