@@ -3,7 +3,7 @@
 // @name:ru             Панель управления скоростью YouTube в режиме кинотеатра
 // @namespace           https://github.com/oleg-zubkov
 // @version             2.3
-// @description         Cinema mode for YouTube: speed control panel, night mode, edge glow, hides sidebar/comments/search
+// @description         Cinema mode for YouTube: speed control panel (bottom center on hover), night mode, edge glow, hides sidebar/comments/search
 // @description:ru      Режим кинотеатра для YouTube: панель скорости, ночной режим, свечение краёв, скрытие сайдбара/комментариев/поиска
 // @author              Олег Зубков
 // @copyright           2026, Олег Зубков

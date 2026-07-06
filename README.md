@@ -9,8 +9,8 @@
 
 ## Features / Возможности
 
-- **Speed control** — 1x, 1.25x, 1.5x, 1.75x, 2x, 2.2x
-  Панель управления скоростью воспроизведения
+- **Speed control** — 1x, 1.25x, 1.5x, 1.75x, 2x, 2.2x; appears at bottom center on hover
+  Панель управления скоростью воспроизведения — появляется в центре внизу при наведении
 
 - **Night mode** — dims video to 60% for comfortable viewing in dark
   Ночной режим — затемняет видео до 60%
@@ -21,8 +21,8 @@
 - **Pure cinema layout** — hides sidebar, comments, search bar, microphone
   Чистый кинотеатр — скрывает сайдбар, комментарии, строку поиска, микрофон
 
-- **Auto-hide UI** — speed bar appears on hover, hides after 5 seconds
-  Панель скорости автоматически скрывается
+- **Auto-hide UI** — speed bar appears on hover at bottom center, hides after 5 seconds
+  Панель скорости автоматически скрывается — появляется в центре внизу при наведении, исчезает через 5 секунд
 
 ---
 
