@@ -39,6 +39,7 @@
             this.hideElements();
             this.waitForVideo();
             this.setupObservers();
+            this.setupNavigation();
         }
 
         injectStyles() {
@@ -73,7 +74,6 @@
         }
 
         hideElements() {
-            if (!this.isWatchPage()) return;
             var allSelectors = [
                 '#secondary', '#comments',
                 '#search', '#search-input', '#voice-search-button', 'ytd-searchbox',
@@ -81,10 +81,15 @@
                 'input#search', '[aria-label="Search"]', '[aria-label="Search YouTube"]',
                 '[placeholder="Search"]', '[placeholder="Search YouTube"]'
             ];
+            var hidden = this.isWatchPage();
             for (var i = 0; i < allSelectors.length; i++) {
                 var els = document.querySelectorAll(allSelectors[i]);
                 for (var j = 0; j < els.length; j++) {
-                    els[j].style.setProperty('display', 'none', 'important');
+                    if (hidden) {
+                        els[j].style.setProperty('display', 'none', 'important');
+                    } else {
+                        els[j].style.removeProperty('display');
+                    }
                 }
             }
         }
@@ -123,6 +128,20 @@
             this.observer.observe(document.body, {
                 childList: true,
                 subtree: true
+            });
+        }
+
+        setupNavigation() {
+            var self = this;
+            window.addEventListener('yt-navigate-finish', function () {
+                self.hideElements();
+                if (!self.isWatchPage()) {
+                    self.stopEdgeGlow();
+                    self.removeSpeedBar();
+                    self.videoElement = null;
+                } else {
+                    self.waitForVideo();
+                }
             });
         }
 
