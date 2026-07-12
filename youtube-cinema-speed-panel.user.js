@@ -30,6 +30,7 @@
             this.ctx = null;
             this.glowTimer = null;
             this.nightMode = false;
+            this.stretched = false;
             this.glowWarned = false;
             this.init();
         }
@@ -48,7 +49,7 @@
                 '.html5-video-container { background: #000 !important; outline: none !important }',
                 '#movie_player { outline: none !important }',
                 '#movie_player video { box-shadow: inset 0 0 100px -25px rgba(0,0,0,0.7) }',
-                '.cinema-speed-container { position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center }',
+                '.cinema-speed-container { position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center }',
                 '.cinema-speed-bar { display: flex; align-items: center; gap: 5px; padding: 8px 14px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; opacity: 0.5; transition: opacity 0.35s ease, transform 0.35s ease }',
                 '.cinema-speed-bar:hover { opacity: 1 }',
                 '.cinema-speed-bar.hidden { opacity: 0; transform: translateY(24px); pointer-events: none }',
@@ -61,8 +62,12 @@
                 '.cinema-speed-btn.night-btn { border-color: rgba(180,0,255,0.35); background: rgba(180,0,255,0.12); color: #c44dff }',
                 '.cinema-speed-btn.night-btn:hover { background: rgba(180,0,255,0.3) }',
                 '.cinema-speed-btn.night-btn.active { background: rgba(255,200,0,0.2); border-color: #ffcc00; color: #ffcc00 }',
+                '.cinema-speed-btn.stretch-btn { border-color: rgba(255,140,0,0.35); background: rgba(255,140,0,0.12); color: #ff8c00 }',
+                '.cinema-speed-btn.stretch-btn:hover { background: rgba(255,140,0,0.3) }',
+                '.cinema-speed-btn.stretch-btn.active { background: rgba(255,140,0,0.3); border-color: #ff8c00; color: #ff8c00 }',
                 'video.night-mode { opacity: 0.6 !important }',
-                '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }'
+                '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }',
+                'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }'
             ].join('\n');
             GM_addStyle(styles);
         }
@@ -187,6 +192,12 @@
             nightBtn.dataset.night = '1';
             bar.appendChild(nightBtn);
 
+            var stretchBtn = document.createElement('button');
+            stretchBtn.className = 'cinema-speed-btn stretch-btn';
+            stretchBtn.textContent = 'Stretch';
+            stretchBtn.dataset.stretch = '1';
+            bar.appendChild(stretchBtn);
+
             var val = document.createElement('span');
             val.className = 'cinema-speed-value';
             val.id = 'cinema-speed-value';
@@ -205,6 +216,12 @@
                     self.videoElement.classList.toggle('night-mode', self.nightMode);
                     var vc = self.videoElement.closest('.html5-video-container');
                     if (vc) vc.classList.toggle('night-mode', self.nightMode);
+                    return;
+                }
+                if (target.dataset.stretch) {
+                    self.stretched = !self.stretched;
+                    target.classList.toggle('active', self.stretched);
+                    self.videoElement.classList.toggle('stretched', self.stretched);
                     return;
                 }
                 var speed = parseFloat(target.dataset.speed);
@@ -334,6 +351,7 @@
             this.removeSpeedBar();
             if (this.videoElement) {
                 this.videoElement.classList.remove('night-mode');
+                this.videoElement.classList.remove('stretched');
                 this.videoElement.style.boxShadow = '';
                 var vc = this.videoElement.closest('.html5-video-container');
                 if (vc) vc.classList.remove('night-mode');
