@@ -322,13 +322,24 @@
                     lr /= 8; lg /= 8; lb /= 8;
                     rr /= 8; rg /= 8; rb /= 8;
 
-                    self.videoElement.style.boxShadow = [
-                        'inset 0 0 100px -20px rgba(0,0,0,0.65)',
-                        '0 -50px 80px -30px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.5)',
-                        '0 50px 80px -30px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.5)',
-                        '-50px 0 80px -30px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.5)',
-                        '50px 0 80px -30px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.5)'
-                    ].join(',');
+                    var glowShadow;
+                    if (self.stretched) {
+                        glowShadow = [
+                            '0 -3px 20px -2px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.7)',
+                            '0 3px 20px -2px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.7)',
+                            '-3px 0 20px -2px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.7)',
+                            '3px 0 20px -2px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.7)'
+                        ].join(',');
+                    } else {
+                        glowShadow = [
+                            'inset 0 0 100px -20px rgba(0,0,0,0.65)',
+                            '0 -50px 80px -30px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.5)',
+                            '0 50px 80px -30px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.5)',
+                            '-50px 0 80px -30px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.5)',
+                            '50px 0 80px -30px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.5)'
+                        ].join(',');
+                    }
+                    self.videoElement.style.boxShadow = glowShadow;
                 } catch (e) {
                     if (!self.glowWarned) {
                         self.glowWarned = true;
