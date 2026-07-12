@@ -28,10 +28,12 @@
             this.speedContainer = null;
             this.canvas = null;
             this.ctx = null;
+            this.imageData = null;
             this.glowTimer = null;
             this.nightMode = false;
             this.stretched = false;
             this.glowWarned = false;
+            this.lastHiddenState = null;
             this.init();
         }
 
@@ -44,32 +46,29 @@
         }
 
         injectStyles() {
-            const styles = [
-                'video { outline: none !important; border: none !important }',
-                '.html5-video-container { background: #000 !important; outline: none !important }',
-                '#movie_player { outline: none !important; overflow: visible !important }',
-                '#movie_player video { box-shadow: inset 0 0 100px -25px rgba(0,0,0,0.7) }',
-                '.cinema-speed-container { position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center }',
-                '.cinema-speed-bar { display: flex; align-items: center; gap: 5px; padding: 8px 14px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; opacity: 0.5; transition: opacity 0.35s ease, transform 0.35s ease }',
-                '.cinema-speed-bar:hover { opacity: 1 }',
-                '.cinema-speed-bar.hidden { opacity: 0; transform: translateY(24px); pointer-events: none }',
-                '.cinema-speed-bar .cinema-speed-btn { padding: 5px 10px; border: 1px solid rgba(0,212,255,0.35); background: rgba(0,212,255,0.12); color: #00d4ff; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.15s }',
-                '.cinema-speed-bar .cinema-speed-btn:hover { background: rgba(0,212,255,0.3) }',
-                '.cinema-speed-bar .cinema-speed-btn.active { background: rgba(0,255,0,0.25); border-color: #00ff00; color: #00ff00 }',
-                '.cinema-speed-label { color: #aaa; font-size: 12px; font-weight: bold; margin-right: 4px }',
-                '.cinema-speed-value { color: #00ff00; font-size: 12px; font-weight: bold; margin-left: 6px }',
-                '.cinema-speed-btn.night-btn { border-color: rgba(180,0,255,0.35); background: rgba(180,0,255,0.12); color: #c44dff }',
-                '.cinema-speed-btn.night-btn:hover { background: rgba(180,0,255,0.3) }',
-                '.cinema-speed-btn.night-btn.active { background: rgba(255,200,0,0.2); border-color: #ffcc00; color: #ffcc00 }',
-                '.cinema-speed-btn.stretch-btn { border-color: rgba(255,140,0,0.35); background: rgba(255,140,0,0.12); color: #ff8c00 }',
-                '.cinema-speed-btn.stretch-btn:hover { background: rgba(255,140,0,0.3) }',
-                '.cinema-speed-btn.stretch-btn.active { background: rgba(255,140,0,0.3); border-color: #ff8c00; color: #ff8c00 }',
-                'video.night-mode { opacity: 0.6 !important }',
-                '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }',
-                'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }',
-                'video.stretched.night-mode { opacity: 1 !important; filter: contrast(1.1) saturate(1.2) !important }',
-
-            ].join('\n');
+            var styles = 'video{outline:none!important;border:none!important}' +
+                '.html5-video-container{background:#000!important;outline:none!important}' +
+                '#movie_player{outline:none!important}' +
+                '#movie_player video{box-shadow:inset 0 0 100px -25px rgba(0,0,0,0.7)}' +
+                '.cinema-speed-container{position:fixed;bottom:250px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;align-items:center}' +
+                '.cinema-speed-bar{display:flex;align-items:center;gap:5px;padding:8px 14px;background:rgba(0,0,0,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:10px;opacity:0.5;transition:opacity .35s ease,transform .35s ease}' +
+                '.cinema-speed-bar:hover{opacity:1}' +
+                '.cinema-speed-bar.hidden{opacity:0;transform:translateY(24px);pointer-events:none}' +
+                '.cinema-speed-bar .cinema-speed-btn{padding:5px 10px;border:1px solid rgba(0,212,255,0.35);background:rgba(0,212,255,0.12);color:#00d4ff;border-radius:5px;cursor:pointer;font-size:12px;font-weight:bold;transition:all .15s}' +
+                '.cinema-speed-bar .cinema-speed-btn:hover{background:rgba(0,212,255,0.3)}' +
+                '.cinema-speed-bar .cinema-speed-btn.active{background:rgba(0,255,0,0.25);border-color:#00ff00;color:#00ff00}' +
+                '.cinema-speed-label{color:#aaa;font-size:12px;font-weight:bold;margin-right:4px}' +
+                '.cinema-speed-value{color:#00ff00;font-size:12px;font-weight:bold;margin-left:6px}' +
+                '.cinema-speed-btn.night-btn{border-color:rgba(180,0,255,0.35);background:rgba(180,0,255,0.12);color:#c44dff}' +
+                '.cinema-speed-btn.night-btn:hover{background:rgba(180,0,255,0.3)}' +
+                '.cinema-speed-btn.night-btn.active{background:rgba(255,200,0,0.2);border-color:#ffcc00;color:#ffcc00}' +
+                '.cinema-speed-btn.stretch-btn{border-color:rgba(255,140,0,0.35);background:rgba(255,140,0,0.12);color:#ff8c00}' +
+                '.cinema-speed-btn.stretch-btn:hover{background:rgba(255,140,0,0.3)}' +
+                '.cinema-speed-btn.stretch-btn.active{background:rgba(255,140,0,0.3);border-color:#ff8c00;color:#ff8c00}' +
+                'video.night-mode{opacity:0.6!important}' +
+                '.html5-video-container.night-mode{filter:contrast(1.1) saturate(1.2)!important}' +
+                'video.stretched{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;object-fit:contain!important;z-index:99998!important;background:#000!important}' +
+                'video.stretched.night-mode{opacity:1!important;filter:contrast(1.1) saturate(1.2)!important}';
             GM_addStyle(styles);
         }
 
@@ -78,22 +77,16 @@
         }
 
         hideElements() {
-            var allSelectors = [
-                '#secondary', '#comments',
-                '#search', '#search-input', '#voice-search-button', 'ytd-searchbox',
-                '#center', '#search-form', '#search-container', '#masthead-search-terms',
-                'input#search', '[aria-label="Search"]', '[aria-label="Search YouTube"]',
-                '[placeholder="Search"]', '[placeholder="Search YouTube"]'
-            ];
             var hidden = this.isWatchPage();
-            for (var i = 0; i < allSelectors.length; i++) {
-                var els = document.querySelectorAll(allSelectors[i]);
-                for (var j = 0; j < els.length; j++) {
-                    if (hidden) {
-                        els[j].style.setProperty('display', 'none', 'important');
-                    } else {
-                        els[j].style.removeProperty('display');
-                    }
+            if (hidden === this.lastHiddenState) return;
+            this.lastHiddenState = hidden;
+            var selectors = '#secondary,#comments,#search,#search-input,#voice-search-button,ytd-searchbox,#center,#search-form,#search-container,#masthead-search-terms,input#search,[aria-label="Search"],[aria-label="Search YouTube"],[placeholder="Search"],[placeholder="Search YouTube"]';
+            var els = document.querySelectorAll(selectors);
+            for (var i = 0; i < els.length; i++) {
+                if (hidden) {
+                    els[i].style.setProperty('display', 'none', 'important');
+                } else {
+                    els[i].style.removeProperty('display');
                 }
             }
         }
@@ -119,6 +112,7 @@
             this.observer = new MutationObserver(function () {
                 if (debounce) return;
                 debounce = setTimeout(function () { debounce = null; }, 500);
+                self.lastHiddenState = null;
                 self.hideElements();
                 var video = document.querySelector('video');
                 if (video && video !== self.videoElement) {
@@ -141,6 +135,7 @@
         setupNavigation() {
             var self = this;
             window.addEventListener('yt-navigate-finish', function () {
+                self.lastHiddenState = null;
                 self.hideElements();
                 if (!self.isWatchPage()) {
                     self.stopEdgeGlow();
@@ -169,12 +164,10 @@
             var self = this;
             var container = document.createElement('div');
             container.className = 'cinema-speed-container';
-            container.id = 'cinema-speed-container';
             this.speedContainer = container;
 
             var bar = document.createElement('div');
             bar.className = 'cinema-speed-bar';
-            bar.id = 'cinema-speed-bar';
 
             var label = document.createElement('span');
             label.className = 'cinema-speed-label';
@@ -204,7 +197,6 @@
 
             var val = document.createElement('span');
             val.className = 'cinema-speed-value';
-            val.id = 'cinema-speed-value';
             val.textContent = '1.00x';
             bar.appendChild(val);
 
@@ -238,8 +230,7 @@
                     if (!btns[k].dataset.night) btns[k].classList.remove('active');
                 }
                 target.classList.add('active');
-                var valEl = document.getElementById('cinema-speed-value');
-                if (valEl) valEl.textContent = speed.toFixed(2) + 'x';
+                val.textContent = speed.toFixed(2) + 'x';
             });
 
             var curSpeed = this.videoElement ? this.videoElement.playbackRate : 1;
@@ -275,7 +266,10 @@
             var self = this;
 
             this.canvas = document.createElement('canvas');
+            this.canvas.width = 8;
+            this.canvas.height = 8;
             this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+            this.imageData = this.ctx.createImageData(8, 8);
             this.glowWarned = false;
 
             var sample = function () {
@@ -287,6 +281,13 @@
                     self.glowTimer = setTimeout(sample, 1000);
                     return;
                 }
+                if (self.stretched) {
+                    if (self.videoElement.style.boxShadow !== 'none') {
+                        self.videoElement.style.boxShadow = 'none';
+                    }
+                    self.glowTimer = setTimeout(sample, 1000);
+                    return;
+                }
                 try {
                     var vw = self.videoElement.videoWidth;
                     var vh = self.videoElement.videoHeight;
@@ -295,8 +296,6 @@
                         return;
                     }
 
-                    self.canvas.width = 8;
-                    self.canvas.height = 8;
                     self.ctx.drawImage(self.videoElement, 0, 0, 8, 8);
                     var d = self.ctx.getImageData(0, 0, 8, 8).data;
 
@@ -308,33 +307,26 @@
                         var bo = (56 + i) * 4;
                         br += d[bo]; bg += d[bo + 1]; bb += d[bo + 2];
                     }
-                    tr /= 8; tg /= 8; tb /= 8;
-                    br /= 8; bg /= 8; bb /= 8;
+                    tr = (tr / 8) | 0; tg = (tg / 8) | 0; tb = (tb / 8) | 0;
+                    br = (br / 8) | 0; bg = (bg / 8) | 0; bb = (bb / 8) | 0;
 
                     var lr = 0, lg = 0, lb = 0;
                     var rr = 0, rg = 0, rb = 0;
                     for (var j = 0; j < 8; j++) {
-                        var li = j * 8 * 4;
-                        var ri = li + 7 * 4;
+                        var li = j * 32;
+                        var ri = li + 28;
                         lr += d[li]; lg += d[li + 1]; lb += d[li + 2];
                         rr += d[ri]; rg += d[ri + 1]; rb += d[ri + 2];
                     }
-                    lr /= 8; lg /= 8; lb /= 8;
-                    rr /= 8; rg /= 8; rb /= 8;
+                    lr = (lr / 8) | 0; lg = (lg / 8) | 0; lb = (lb / 8) | 0;
+                    rr = (rr / 8) | 0; rg = (rg / 8) | 0; rb = (rb / 8) | 0;
 
-                    var glowShadow;
-                    if (self.stretched) {
-                        glowShadow = 'none';
-                    } else {
-                        glowShadow = [
-                            'inset 0 0 100px -20px rgba(0,0,0,0.65)',
-                            '0 -50px 80px -30px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.5)',
-                            '0 50px 80px -30px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.5)',
-                            '-50px 0 80px -30px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.5)',
-                            '50px 0 80px -30px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.5)'
-                        ].join(',');
-                    }
-                    self.videoElement.style.boxShadow = glowShadow;
+                    self.videoElement.style.boxShadow =
+                        'inset 0 0 100px -20px rgba(0,0,0,0.65),' +
+                        '0 -50px 80px -30px rgba(' + tr + ',' + tg + ',' + tb + ',0.5),' +
+                        '0 50px 80px -30px rgba(' + br + ',' + bg + ',' + bb + ',0.5),' +
+                        '-50px 0 80px -30px rgba(' + lr + ',' + lg + ',' + lb + ',0.5),' +
+                        '50px 0 80px -30px rgba(' + rr + ',' + rg + ',' + rb + ',0.5)';
                 } catch (e) {
                     if (!self.glowWarned) {
                         self.glowWarned = true;
@@ -357,6 +349,7 @@
             }
             this.canvas = null;
             this.ctx = null;
+            this.imageData = null;
         }
 
         destroy() {
