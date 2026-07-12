@@ -66,7 +66,7 @@
                 '.cinema-speed-btn.stretch-btn.active { background: rgba(255,140,0,0.3); border-color: #ff8c00; color: #ff8c00 }',
                 'video.night-mode { opacity: 0.6 !important }',
                 '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }',
-                'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }',
+                'video.stretched { position: fixed !important; top: 2vh !important; left: 2vw !important; width: 96vw !important; height: 96vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }',
                 'video.stretched.night-mode { opacity: 1 !important; filter: contrast(1.1) saturate(1.2) !important }',
 
             ].join('\n');
@@ -325,10 +325,10 @@
                     var glowShadow;
                     if (self.stretched) {
                         glowShadow = [
-                            'inset 0 30px 50px -10px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.6)',
-                            'inset 0 -30px 50px -10px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.6)',
-                            'inset 30px 0 50px -10px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.6)',
-                            'inset -30px 0 50px -10px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.6)'
+                            '0 -20px 40px -10px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.6)',
+                            '0 20px 40px -10px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.6)',
+                            '-20px 0 40px -10px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.6)',
+                            '20px 0 40px -10px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.6)'
                         ].join(',');
                     } else {
                         glowShadow = [
