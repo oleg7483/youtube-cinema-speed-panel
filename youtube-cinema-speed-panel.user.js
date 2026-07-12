@@ -325,10 +325,10 @@
                     var glowShadow;
                     if (self.stretched) {
                         glowShadow = [
-                            '0 -3px 20px -2px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.7)',
-                            '0 3px 20px -2px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.7)',
-                            '-3px 0 20px -2px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.7)',
-                            '3px 0 20px -2px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.7)'
+                            'inset 0 30px 50px -10px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.6)',
+                            'inset 0 -30px 50px -10px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.6)',
+                            'inset 30px 0 50px -10px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.6)',
+                            'inset -30px 0 50px -10px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.6)'
                         ].join(',');
                     } else {
                         glowShadow = [
