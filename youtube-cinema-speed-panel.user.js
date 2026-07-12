@@ -57,9 +57,7 @@
                 '.cinema-speed-bar .cinema-speed-btn.active { background: rgba(0,255,0,0.25); border-color: #00ff00; color: #00ff00 }',
                 '.cinema-speed-label { color: #aaa; font-size: 12px; font-weight: bold; margin-right: 4px }',
                 '.cinema-speed-value { color: #00ff00; font-size: 12px; font-weight: bold; margin-left: 6px }',
-                '.cinema-speed-trigger { display: none; width: 20px; height: 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-top: none; border-radius: 0 0 10px 10px; color: #00d4ff; font-size: 6px; text-align: center; line-height: 14px; user-select: none; transition: background 0.2s }',
-                '.cinema-speed-trigger.visible { display: block }',
-                '.cinema-speed-trigger:hover { background: rgba(0,0,0,0.65) }',
+
                 '.cinema-speed-btn.night-btn { border-color: rgba(180,0,255,0.35); background: rgba(180,0,255,0.12); color: #c44dff }',
                 '.cinema-speed-btn.night-btn:hover { background: rgba(180,0,255,0.3) }',
                 '.cinema-speed-btn.night-btn.active { background: rgba(255,200,0,0.2); border-color: #ffcc00; color: #ffcc00 }',
@@ -195,12 +193,7 @@
             val.textContent = '1.00x';
             bar.appendChild(val);
 
-            var trigger = document.createElement('div');
-            trigger.className = 'cinema-speed-trigger';
-            trigger.id = 'cinema-speed-trigger';
-
             container.appendChild(bar);
-            container.appendChild(trigger);
             document.body.appendChild(container);
 
             container.addEventListener('click', function (e) {
@@ -236,7 +229,6 @@
 
             var showBar = function () {
                 bar.classList.remove('hidden');
-                trigger.classList.remove('visible');
                 clearTimeout(self.hideTimeout);
             };
 
@@ -244,7 +236,6 @@
                 clearTimeout(self.hideTimeout);
                 self.hideTimeout = setTimeout(function () {
                     bar.classList.add('hidden');
-                    trigger.classList.add('visible');
                 }, 5000);
             };
 
