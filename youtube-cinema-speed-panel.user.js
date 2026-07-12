@@ -32,6 +32,7 @@
             this.nightMode = false;
             this.stretched = false;
             this.glowWarned = false;
+            this.glowContainer = null;
             this.init();
         }
 
@@ -47,7 +48,7 @@
             const styles = [
                 'video { outline: none !important; border: none !important }',
                 '.html5-video-container { background: #000 !important; outline: none !important }',
-                '#movie_player { outline: none !important }',
+                '#movie_player { outline: none !important; overflow: visible !important }',
                 '#movie_player video { box-shadow: inset 0 0 100px -25px rgba(0,0,0,0.7) }',
                 '.cinema-speed-container { position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center }',
                 '.cinema-speed-bar { display: flex; align-items: center; gap: 5px; padding: 8px 14px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; opacity: 0.5; transition: opacity 0.35s ease, transform 0.35s ease }',
@@ -58,7 +59,6 @@
                 '.cinema-speed-bar .cinema-speed-btn.active { background: rgba(0,255,0,0.25); border-color: #00ff00; color: #00ff00 }',
                 '.cinema-speed-label { color: #aaa; font-size: 12px; font-weight: bold; margin-right: 4px }',
                 '.cinema-speed-value { color: #00ff00; font-size: 12px; font-weight: bold; margin-left: 6px }',
-
                 '.cinema-speed-btn.night-btn { border-color: rgba(180,0,255,0.35); background: rgba(180,0,255,0.12); color: #c44dff }',
                 '.cinema-speed-btn.night-btn:hover { background: rgba(180,0,255,0.3) }',
                 '.cinema-speed-btn.night-btn.active { background: rgba(255,200,0,0.2); border-color: #ffcc00; color: #ffcc00 }',
@@ -68,7 +68,8 @@
                 'video.night-mode { opacity: 0.6 !important }',
                 '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }',
                 'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }',
-                'video.stretched.night-mode { opacity: 1 !important; filter: contrast(1.1) saturate(1.2) !important }'
+                'video.stretched.night-mode { opacity: 1 !important; filter: contrast(1.1) saturate(1.2) !important }',
+                '.cinema-glow-layer { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; pointer-events: none !important; z-index: 99997 !important }'
             ].join('\n');
             GM_addStyle(styles);
         }
@@ -115,7 +116,10 @@
 
         setupObservers() {
             var self = this;
+            var debounce = null;
             this.observer = new MutationObserver(function () {
+                if (debounce) return;
+                debounce = setTimeout(function () { debounce = null; }, 500);
                 self.hideElements();
                 var video = document.querySelector('video');
                 if (video && video !== self.videoElement) {
@@ -270,6 +274,12 @@
             if (!this.videoElement) return;
 
             var self = this;
+
+            this.glowContainer = document.createElement('div');
+            this.glowContainer.className = 'cinema-glow-layer';
+            this.glowContainer.id = 'cinema-glow-layer';
+            document.body.appendChild(this.glowContainer);
+
             this.canvas = document.createElement('canvas');
             this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
             this.glowWarned = false;
@@ -318,13 +328,14 @@
                     lr /= 8; lg /= 8; lb /= 8;
                     rr /= 8; rg /= 8; rb /= 8;
 
-                    self.videoElement.style.boxShadow = [
-                        'inset 0 0 100px -20px rgba(0,0,0,0.65)',
+                    self.glowContainer.style.boxShadow = [
                         '0 -50px 80px -30px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.5)',
                         '0 50px 80px -30px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.5)',
                         '-50px 0 80px -30px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.5)',
                         '50px 0 80px -30px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.5)'
                     ].join(',');
+
+                    self.videoElement.style.boxShadow = 'inset 0 0 100px -20px rgba(0,0,0,0.65)';
                 } catch (e) {
                     if (!self.glowWarned) {
                         self.glowWarned = true;
@@ -341,6 +352,10 @@
             if (this.glowTimer) {
                 clearTimeout(this.glowTimer);
                 this.glowTimer = null;
+            }
+            if (this.glowContainer) {
+                this.glowContainer.remove();
+                this.glowContainer = null;
             }
             if (this.videoElement) {
                 this.videoElement.style.boxShadow = '';
