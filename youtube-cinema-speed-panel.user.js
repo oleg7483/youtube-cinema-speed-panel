@@ -32,7 +32,6 @@
             this.nightMode = false;
             this.stretched = false;
             this.glowWarned = false;
-            this.glowContainer = null;
             this.init();
         }
 
@@ -69,7 +68,7 @@
                 '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }',
                 'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }',
                 'video.stretched.night-mode { opacity: 1 !important; filter: contrast(1.1) saturate(1.2) !important }',
-                '.cinema-glow-layer { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; pointer-events: none !important; z-index: 99997 !important }'
+
             ].join('\n');
             GM_addStyle(styles);
         }
@@ -275,11 +274,6 @@
 
             var self = this;
 
-            this.glowContainer = document.createElement('div');
-            this.glowContainer.className = 'cinema-glow-layer';
-            this.glowContainer.id = 'cinema-glow-layer';
-            document.body.appendChild(this.glowContainer);
-
             this.canvas = document.createElement('canvas');
             this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
             this.glowWarned = false;
@@ -328,14 +322,13 @@
                     lr /= 8; lg /= 8; lb /= 8;
                     rr /= 8; rg /= 8; rb /= 8;
 
-                    self.glowContainer.style.boxShadow = [
+                    self.videoElement.style.boxShadow = [
+                        'inset 0 0 100px -20px rgba(0,0,0,0.65)',
                         '0 -50px 80px -30px rgba(' + (tr | 0) + ',' + (tg | 0) + ',' + (tb | 0) + ',0.5)',
                         '0 50px 80px -30px rgba(' + (br | 0) + ',' + (bg | 0) + ',' + (bb | 0) + ',0.5)',
                         '-50px 0 80px -30px rgba(' + (lr | 0) + ',' + (lg | 0) + ',' + (lb | 0) + ',0.5)',
                         '50px 0 80px -30px rgba(' + (rr | 0) + ',' + (rg | 0) + ',' + (rb | 0) + ',0.5)'
                     ].join(',');
-
-                    self.videoElement.style.boxShadow = 'inset 0 0 100px -20px rgba(0,0,0,0.65)';
                 } catch (e) {
                     if (!self.glowWarned) {
                         self.glowWarned = true;
@@ -352,10 +345,6 @@
             if (this.glowTimer) {
                 clearTimeout(this.glowTimer);
                 this.glowTimer = null;
-            }
-            if (this.glowContainer) {
-                this.glowContainer.remove();
-                this.glowContainer = null;
             }
             if (this.videoElement) {
                 this.videoElement.style.boxShadow = '';
