@@ -48,7 +48,7 @@
                 '.html5-video-container { background: #000 !important; outline: none !important }',
                 '#movie_player { outline: none !important }',
                 '#movie_player video { box-shadow: inset 0 0 100px -25px rgba(0,0,0,0.7) }',
-                '.cinema-speed-container { position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center }',
+                '.cinema-speed-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; align-items: center }',
                 '.cinema-speed-bar { display: flex; align-items: center; gap: 5px; padding: 8px 14px; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; opacity: 0.5; transition: opacity 0.35s ease, transform 0.35s ease }',
                 '.cinema-speed-bar:hover { opacity: 1 }',
                 '.cinema-speed-bar.hidden { opacity: 0; transform: translateY(24px); pointer-events: none }',
