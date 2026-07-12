@@ -148,6 +148,7 @@
         }
 
         removeSpeedBar() {
+            this.unbindVideoEvents();
             if (this.hideTimeout) {
                 clearTimeout(this.hideTimeout);
                 this.hideTimeout = null;
@@ -158,8 +159,20 @@
             }
         }
 
+        unbindVideoEvents() {
+            if (this.videoElement && this._onPlay) {
+                this.videoElement.removeEventListener('play', this._onPlay);
+                this.videoElement.removeEventListener('pause', this._onPause);
+                this.videoElement.removeEventListener('ended', this._onEnded);
+                this._onPlay = null;
+                this._onPause = null;
+                this._onEnded = null;
+            }
+        }
+
         createSpeedBar() {
             this.removeSpeedBar();
+            this.unbindVideoEvents();
 
             var self = this;
             var container = document.createElement('div');
@@ -167,7 +180,7 @@
             this.speedContainer = container;
 
             var bar = document.createElement('div');
-            bar.className = 'cinema-speed-bar';
+            bar.className = 'cinema-speed-bar hidden';
 
             var label = document.createElement('span');
             label.className = 'cinema-speed-label';
@@ -257,6 +270,26 @@
             container.addEventListener('mouseleave', startHideTimer);
 
             setTimeout(startHideTimer, 100);
+
+            if (this.videoElement) {
+                self._onPlay = function () { showBar(); startHideTimer(); };
+                self._onPause = function () {
+                    clearTimeout(self.hideTimeout);
+                    self.hideTimeout = setTimeout(function () {
+                        bar.classList.add('hidden');
+                    }, 3000);
+                };
+                self._onEnded = function () {
+                    bar.classList.add('hidden');
+                };
+                self.videoElement.addEventListener('play', self._onPlay);
+                self.videoElement.addEventListener('pause', self._onPause);
+                self.videoElement.addEventListener('ended', self._onEnded);
+                if (!self.videoElement.paused) {
+                    bar.classList.remove('hidden');
+                    startHideTimer();
+                }
+            }
         }
 
         startEdgeGlow() {
