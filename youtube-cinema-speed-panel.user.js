@@ -67,7 +67,8 @@
                 '.cinema-speed-btn.stretch-btn.active { background: rgba(255,140,0,0.3); border-color: #ff8c00; color: #ff8c00 }',
                 'video.night-mode { opacity: 0.6 !important }',
                 '.html5-video-container.night-mode { filter: contrast(1.1) saturate(1.2) !important }',
-                'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }'
+                'video.stretched { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; object-fit: contain !important; z-index: 99998 !important; background: #000 !important }',
+                'video.stretched.night-mode { opacity: 1 !important; filter: contrast(1.1) saturate(1.2) !important }'
             ].join('\n');
             GM_addStyle(styles);
         }
@@ -215,13 +216,15 @@
                     target.classList.toggle('active', self.nightMode);
                     self.videoElement.classList.toggle('night-mode', self.nightMode);
                     var vc = self.videoElement.closest('.html5-video-container');
-                    if (vc) vc.classList.toggle('night-mode', self.nightMode);
+                    if (vc && !self.stretched) vc.classList.toggle('night-mode', self.nightMode);
                     return;
                 }
                 if (target.dataset.stretch) {
                     self.stretched = !self.stretched;
                     target.classList.toggle('active', self.stretched);
                     self.videoElement.classList.toggle('stretched', self.stretched);
+                    var vc2 = self.videoElement.closest('.html5-video-container');
+                    if (vc2) vc2.classList.toggle('night-mode', self.nightMode && !self.stretched);
                     return;
                 }
                 var speed = parseFloat(target.dataset.speed);
